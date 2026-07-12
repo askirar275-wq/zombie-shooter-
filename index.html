@@ -1,191 +1,44 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="hi">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Home Paint – Manual Brush</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Village To City Tycoon</title>
 
-<style>
-:root{
- --accent:#00ffd5;
- --bg:#0b1025;
- --card:rgba(255,255,255,.08);
-}
-*{box-sizing:border-box;font-family:system-ui}
-body{
- margin:0;
- background:linear-gradient(135deg,#0b1025,#050714);
- color:#fff;
-}
-header{
- padding:14px;
- text-align:center;
- font-size:20px;
- font-weight:700;
-}
-.app{padding:10px}
-.panel{
- background:var(--card);
- border-radius:18px;
- padding:12px;
-}
-canvas{
- width:100%;
- border-radius:14px;
- background:#000;
- touch-action:none;
-}
-.controls{
- display:grid;
- grid-template-columns:repeat(2,1fr);
- gap:10px;
- margin-top:12px;
-}
-button,label,select{
- padding:12px;
- border-radius:16px;
- border:2px solid var(--accent);
- background:transparent;
- color:#fff;
- font-weight:600;
- text-align:center;
- cursor:pointer;
- transition:.2s;
-}
-button:active,label:active{
- transform:scale(.95);
- background:var(--accent);
- color:#000;
-}
-input[type=color],input[type=range]{
- width:100%;
- height:40px;
- border-radius:10px;
- border:none;
-}
-.full{grid-column:span 2}
-.footer{
- text-align:center;
- opacity:.6;
- font-size:12px;
- margin-top:8px;
-}
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<header>🎨 Home Paint – Manual Brush</header>
+<div id="topBar">
 
-<div class="app">
- <div class="panel">
-  <canvas id="canvas"></canvas>
- </div>
-
- <div class="controls">
-  <label>
-   📸 Upload Photo
-   <input type="file" hidden id="upload" accept="image/*">
-  </label>
-
-  <select id="area">
-   <option value="wall">🧱 Wall</option>
-   <option value="floor">🪵 Floor</option>
-   <option value="ceiling">🏠 Ceiling</option>
-   <option value="gate">🚪 Gate</option>
-   <option value="window">🪟 Window</option>
-  </select>
-
-  <span>🎨 Colour</span>
-  <input type="color" id="color" value="#6fa8dc">
-
-  <span>🖌 Brush Size</span>
-  <input type="range" id="size" min="5" max="60" value="25">
-
-  <button onclick="reset()">♻ Reset</button>
-  <button onclick="save()">💾 Save</button>
- </div>
-
- <div class="footer">
-  Brush paint • Smooth overlay • Mobile friendly
- </div>
+<div class="card">
+💰 Coins :
+<span id="coins">100</span>
 </div>
 
-<script>
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
+<div class="card">
+🏠 Level :
+<span id="level">1</span>
+</div>
 
-let baseImg=null;
-let painting=false;
-let lastX=0,lastY=0;
+</div>
 
-// Resize canvas safely
-function resize(){
- canvas.width = canvas.parentElement.clientWidth;
- canvas.height = canvas.width * 0.65;
-}
-resize();
-addEventListener("resize",resize);
+<canvas id="gameCanvas"></canvas>
 
-// Upload photo
-upload.onchange = e=>{
- const r = new FileReader();
- r.onload = ev=>{
-  const img = new Image();
-  img.onload = ()=>{
-   baseImg = img;
-   resize();
-   ctx.clearRect(0,0,canvas.width,canvas.height);
-   ctx.drawImage(img,0,0,canvas.width,canvas.height);
-  };
-  img.src = ev.target.result;
- };
- r.readAsDataURL(e.target.files[0]);
-};
+<div id="joystick">
+<div id="stick"></div>
+</div>
 
-// Start paint
-canvas.addEventListener("pointerdown",e=>{
- painting=true;
- lastX=e.offsetX;
- lastY=e.offsetY;
-});
+<button id="buildBtn">
+BUILD
+</button>
 
-// End paint
-canvas.addEventListener("pointerup",()=>painting=false);
-canvas.addEventListener("pointerleave",()=>painting=false);
-
-// Paint move
-canvas.addEventListener("pointermove",e=>{
- if(!painting)return;
-
- ctx.strokeStyle = color.value;
- ctx.lineWidth = size.value;
- ctx.lineCap = "round";
- ctx.globalAlpha = 0.7; // smooth overlay
- ctx.beginPath();
- ctx.moveTo(lastX,lastY);
- ctx.lineTo(e.offsetX,e.offsetY);
- ctx.stroke();
-
- lastX=e.offsetX;
- lastY=e.offsetY;
-});
-
-// Reset
-function reset(){
- if(!baseImg)return;
- ctx.clearRect(0,0,canvas.width,canvas.height);
- ctx.drawImage(baseImg,0,0,canvas.width,canvas.height);
-}
-
-// Save
-function save(){
- const a=document.createElement("a");
- a.download="manual-home-paint.png";
- a.href=canvas.toDataURL();
- a.click();
-}
-</script>
+<script src="save.js"></script>
+<script src="map.js"></script>
+<script src="player.js"></script>
+<script src="ui.js"></script>
+<script src="game.js"></script>
 
 </body>
 </html>
