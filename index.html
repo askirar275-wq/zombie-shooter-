@@ -1,41 +1,61 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Village To City Tycoon</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>Blade Arena</title>
 
 <link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
 
+<!-- Top Bar -->
+
 <div id="topBar">
 
-<div class="card">
-💰 Coins :
-<span id="coins">100</span>
+<div class="box">
+🪙 Coins :
+<span id="coins">0</span>
 </div>
 
-<div class="card">
-🏠 Level :
+<div class="box">
+🗡 Blades :
+<span id="bladeCount">0</span>
+</div>
+
+<div class="box">
+⭐ Level :
 <span id="level">1</span>
 </div>
 
 </div>
 
+<!-- Canvas -->
+
 <canvas id="gameCanvas"></canvas>
 
+<!-- Joystick -->
+
 <div id="joystick">
+
 <div id="stick"></div>
+
 </div>
 
-<button id="buildBtn">
-BUILD
+<!-- Pause -->
+
+<button id="pauseBtn">
+⏸
 </button>
 
-<script src="save.js"></script>
-<script src="map.js"></script>
+<!-- Scripts -->
+
+<script src="blade.js"></script>
+<script src="enemy.js"></script>
 <script src="player.js"></script>
 <script src="ui.js"></script>
 <script src="game.js"></script>
