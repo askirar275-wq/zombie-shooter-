@@ -1,109 +1,174 @@
-// ===== Player Controls =====
+// ===== Player Movement =====
 
-let move = {
-    x: 0,
-    y: 0
-};
+let moveX = 0;
+let moveY = 0;
 
-// Keyboard (PC)
-window.addEventListener("keydown", (e) => {
-    switch (e.key.toLowerCase()) {
+// Keyboard Support
+window.addEventListener("keydown", e => {
+
+    switch(e.key.toLowerCase()){
+
         case "w":
         case "arrowup":
-            move.y = -1;
+            moveY = -1;
             break;
-        case "s":
-        case "arrowdown":
-            move.y = 1;
-            break;
-        case "a":
-        case "arrowleft":
-            move.x = -1;
-            break;
-        case "d":
-        case "arrowright":
-            move.x = 1;
-            break;
-    }
-});
 
-window.addEventListener("keyup", (e) => {
-    switch (e.key.toLowerCase()) {
-        case "w":
-        case "arrowup":
         case "s":
         case "arrowdown":
-            move.y = 0;
+            moveY = 1;
             break;
 
         case "a":
         case "arrowleft":
+            moveX = -1;
+            break;
+
         case "d":
         case "arrowright":
-            move.x = 0;
+            moveX = 1;
             break;
+
     }
+
 });
 
-// Mobile Joystick
-const joystick = document.getElementById("joystick");
+window.addEventListener("keyup", e => {
+
+    switch(e.key.toLowerCase()){
+
+        case "w":
+        case "arrowup":
+        case "s":
+        case "arrowdown":
+            moveY = 0;
+            break;
+
+        case "a":
+        case "arrowleft":
+        case "d":
+        case "arrowright":
+            moveX = 0;
+            break;
+
+    }
+
+});
+
+// ===== Mobile Joystick =====
+
+const joy = document.getElementById("joystick");
 const stick = document.getElementById("stick");
 
-let centerX = 70;
-let centerY = 70;
-
-joystick.addEventListener("touchmove", (e) => {
+joy.addEventListener("touchmove", e=>{
 
     e.preventDefault();
 
-    const rect = joystick.getBoundingClientRect();
+    const rect = joy.getBoundingClientRect();
 
-    let x = e.touches[0].clientX - rect.left;
-    let y = e.touches[0].clientY - rect.top;
+    let x = e.touches[0].clientX - rect.left - 70;
+    let y = e.touches[0].clientY - rect.top - 70;
 
-    let dx = x - centerX;
-    let dy = y - centerY;
+    const dis = Math.sqrt(x*x+y*y);
 
-    let distance = Math.sqrt(dx * dx + dy * dy);
+    if(dis>45){
 
-    if (distance > 45) {
-        dx = dx / distance * 45;
-        dy = dy / distance * 45;
+        x = x/dis*45;
+        y = y/dis*45;
+
     }
 
-    stick.style.left = (40 + dx) + "px";
-    stick.style.top = (40 + dy) + "px";
+    stick.style.left = (40+x)+"px";
+    stick.style.top  = (40+y)+"px";
 
-    move.x = dx / 45;
-    move.y = dy / 45;
+    moveX = x/45;
+    moveY = y/45;
 
-}, { passive: false });
+},{passive:false});
 
-joystick.addEventListener("touchend", () => {
+joy.addEventListener("touchend",()=>{
 
-    move.x = 0;
-    move.y = 0;
+    moveX = 0;
+    moveY = 0;
 
-    stick.style.left = "40px";
-    stick.style.top = "40px";
+    stick.style.left="40px";
+    stick.style.top="40px";
 
 });
 
-// Update Player
-function updatePlayer() {
+// ===== Player Blades =====
 
-    player.x += move.x * player.speed;
-    player.y += move.y * player.speed;
+const playerBlades = [];
 
-    if (player.x < 20) player.x = 20;
-    if (player.y < 20) player.y = 20;
+// ===== Update Player =====
 
-    if (player.x > world.width - 20)
-        player.x = world.width - 20;
+function updatePlayer(){
 
-    if (player.y > world.height - 20)
-        player.y = world.height - 20;
+    player.x += moveX * player.speed;
+    player.y += moveY * player.speed;
+
+    player.x = Math.max(player.radius,Math.min(world.width-player.radius,player.x));
+    player.y = Math.max(player.radius,Math.min(world.height-player.radius,player.y));
 
 }
 
-// 
+// ===== Collect Blades =====
+
+function updateBlades(){
+
+    blades.forEach(b=>{
+
+        if(b.taken) return;
+
+        const dx = player.x-b.x;
+        const dy = player.y-b.y;
+
+        if(Math.sqrt(dx*dx+dy*dy)<35){
+
+            b.taken=true;
+
+            playerBlades.push({
+                angle:Math.random()*Math.PI*2
+            });
+
+            document.getElementById("bladeCount").textContent =
+            playerBlades.length;
+
+        }
+
+    });
+
+}
+
+// ===== Draw Player Blades =====
+
+function drawPlayerBlades(){
+
+    playerBlades.forEach((blade,index)=>{
+
+        blade.angle += 0.05;
+
+        const r = 55 + index*4;
+
+        const bx = player.x + Math.cos(blade.angle)*r;
+        const by = player.y + Math.sin(blade.angle)*r;
+
+        ctx.save();
+
+        ctx.translate(
+            bx-camera.x,
+            by-camera.y
+        );
+
+        ctx.rotate(blade.angle);
+
+        ctx.fillStyle="white";
+        ctx.fillRect(-2,-14,4,28);
+
+        ctx.fillStyle="#8b5a2b";
+        ctx.fillRect(-5,8,10,4);
+
+        ctx.restore();
+
+    });
+
+                     }
