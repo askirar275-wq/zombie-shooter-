@@ -1,117 +1,70 @@
-// ===========================
-// Player Controls
-// ===========================
+const player = document.getElementById("player");
 
-let moveX = 0;
-let moveY = 0;
+let playerX = window.innerWidth / 2 - 25;
+const playerY = window.innerHeight - 140;
 
-// Keyboard
-window.addEventListener("keydown",(e)=>{
+player.style.left = playerX + "px";
+player.style.top = playerY + "px";
 
-    switch(e.key.toLowerCase()){
+const speed = 12;
 
-        case "w":
-        case "arrowup":
-            moveY=-1;
-            break;
+function updatePlayer() {
+    player.style.left = playerX + "px";
+}
 
-        case "s":
-        case "arrowdown":
-            moveY=1;
-            break;
-
-        case "a":
-        case "arrowleft":
-            moveX=-1;
-            break;
-
-        case "d":
-        case "arrowright":
-            moveX=1;
-            break;
-
-    }
-
+document.getElementById("moveLeft").addEventListener("touchstart", () => {
+    moveLeft = true;
 });
 
-window.addEventListener("keyup",(e)=>{
-
-    switch(e.key.toLowerCase()){
-
-        case "w":
-        case "arrowup":
-        case "s":
-        case "arrowdown":
-            moveY=0;
-            break;
-
-        case "a":
-        case "arrowleft":
-        case "d":
-        case "arrowright":
-            moveX=0;
-            break;
-
-    }
-
+document.getElementById("moveLeft").addEventListener("touchend", () => {
+    moveLeft = false;
 });
 
-// ===========================
-// Mobile Joystick
-// ===========================
-
-const joystick=document.getElementById("joystick");
-const stick=document.getElementById("stick");
-
-joystick.addEventListener("touchmove",(e)=>{
-
-    e.preventDefault();
-
-    const rect=joystick.getBoundingClientRect();
-
-    let x=e.touches[0].clientX-rect.left-70;
-    let y=e.touches[0].clientY-rect.top-70;
-
-    const dis=Math.sqrt(x*x+y*y);
-
-    if(dis>45){
-
-        x=x/dis*45;
-        y=y/dis*45;
-
-    }
-
-    stick.style.left=(40+x)+"px";
-    stick.style.top=(40+y)+"px";
-
-    moveX=x/45;
-    moveY=y/45;
-
-},{passive:false});
-
-joystick.addEventListener("touchend",()=>{
-
-    moveX=0;
-    moveY=0;
-
-    stick.style.left="40px";
-    stick.style.top="40px";
-
+document.getElementById("moveRight").addEventListener("touchstart", () => {
+    moveRight = true;
 });
 
-// ===========================
-// Update Player
-// ===========================
+document.getElementById("moveRight").addEventListener("touchend", () => {
+    moveRight = false;
+});
 
-function updatePlayer(){
+document.getElementById("moveLeft").addEventListener("mousedown", () => {
+    moveLeft = true;
+});
 
-    player.x+=moveX*player.speed;
-    player.y+=moveY*player.speed;
+document.getElementById("moveLeft").addEventListener("mouseup", () => {
+    moveLeft = false;
+});
 
-    player.x=Math.max(player.radius,
-        Math.min(WORLD.width-player.radius,player.x));
+document.getElementById("moveRight").addEventListener("mousedown", () => {
+    moveRight = true;
+});
 
-    player.y=Math.max(player.radius,
-        Math.min(WORLD.height-player.radius,player.y));
+document.getElementById("moveRight").addEventListener("mouseup", () => {
+    moveRight = false;
+});
 
-                        }
+let moveLeft = false;
+let moveRight = false;
+
+function playerLoop() {
+
+    if (moveLeft) {
+        playerX -= speed;
+    }
+
+    if (moveRight) {
+        playerX += speed;
+    }
+
+    if (playerX < 0) playerX = 0;
+
+    if (playerX > window.innerWidth - 50)
+        playerX = window.innerWidth - 50;
+
+    updatePlayer();
+
+    requestAnimationFrame(playerLoop);
+}
+
+playerLoop();
